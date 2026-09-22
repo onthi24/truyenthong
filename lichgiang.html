@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Giảng Dạy Khoa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #1a4d2e;
+            --teacher-color: #0b694a;
+            --secondary-color: #f4f6f9;
+            --text-color: #333;
+            --border-color: #e2e8f0;
+            --btn-blue: #2563eb;
+            --btn-blue-hover: #1d4ed8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #ffffff; color: var(--text-color); padding: 20px; font-size: 15px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* HEADER NAVBAR */
+        .top-navbar { display: flex; justify-content: space-between; align-items: center; background-color: var(--secondary-color); margin-bottom: 30px; padding: 0 10px 0 20px; }
+        .logo-box { display: flex; align-items: center; }
+        .logo-img { height: 45px; object-fit: contain; margin: 10px 0; }
+        .nav-menu { display: flex; list-style: none; height: 100%; }
+        .nav-item { text-decoration: none; color: #333; padding: 22px 25px; font-weight: 500; font-size: 15px; transition: background-color 0.2s; border-bottom: 3px solid transparent; display: flex; align-items: center; }
+        .nav-item:hover { background-color: #e2e8f0; }
+        .nav-item.active { background-color: #ffffff; border-bottom: 3px solid #000000; font-weight: bold; }
+        .header-title { text-align: center; color: var(--primary-color); margin-bottom: 25px; font-size: 22px; text-transform: uppercase; font-weight: 700; }
+
+        /* FILTER & BUTTON */
+        .filter-section { display: flex; gap: 15px; margin-bottom: 25px; background: var(--secondary-color); padding: 15px 20px; border-radius: 8px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+        .filter-container-left { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .filter-group { display: flex; align-items: center; gap: 8px; }
+        .filter-group label { font-weight: 500; color: #4a5568; font-size: 14px; white-space: nowrap; }
+        .filter-group select, .filter-group input { padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e0; outline: none; font-size: 14px; background-color: white; }
+        .filter-group select { min-width: 120px; cursor: pointer; }
+        .filter-group input { width: 220px; }
+        .filter-group select:focus, .filter-group input:focus { border-color: var(--primary-color); }
+        .btn-download { background-color: var(--btn-blue); color: #ffffff; border: none; padding: 9px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.2s, transform 0.1s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-download:hover { background-color: var(--btn-blue-hover); }
+
+        /* TABLE */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        thead { background-color: var(--primary-color); color: white; }
+        th, td { padding: 14px 15px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+        th { font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
+        th:nth-child(2), td:nth-child(2) { text-align: left; }
+        tbody tr { background-color: #ffffff; transition: background-color 0.2s ease; }
+        tbody tr:nth-child(even) { background-color: #fbfbfb; }
+        tbody tr:hover { background-color: #f1f5f9; }
+        .empty-message { text-align: center; padding: 30px; color: #718096; font-style: italic; }
+        #loading { text-align: center; padding: 20px; color: var(--primary-color); font-weight: bold; font-size: 16px; display: none; }
+
+        @media (max-width: 768px) {
+            .top-navbar { flex-direction: column; padding: 15px; gap: 15px; }
+            .nav-menu { width: 100%; justify-content: space-around; }
+            .nav-item { padding: 10px; font-size: 14px; }
+            .filter-section { flex-direction: column; align-items: stretch; }
+            .filter-container-left { flex-direction: column; align-items: stretch; }
+            .filter-group input { width: 100%; }
+            .btn-download { justify-content: center; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER NAVBAR -->
+        <div class="top-navbar">
+            <div class="logo-box">
+                <img src="https://raw.githubusercontent.com/khcbvadl-ai/quanlidulieu/main/logo.%20KHCB%20trong.png" alt="KHCB LOGO" class="logo-img">
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-item">Trang chủ</a>
+                <a href="#" class="nav-item active">Lịch giảng</a>
+                <a href="video-kho.html" class="nav-item">Video bài giảng</a>
+            </div>
+        </div>
+
+        <h2 class="header-title"><i class="fa-solid fa-calendar-days"></i> LỊCH GIẢNG DẠY TOÀN KHOA</h2>
+
+        <!-- BỘ LỌC VÀ NÚT TẢI LỊCH -->
+        <div class="filter-section">
+            <div class="filter-container-left">
+                <!-- 1. Lọc Thứ -->
+                <div class="filter-group">
+                    <label for="filter-day"><i class="fa-solid fa-filter"></i> Chọn Thứ:</label>
+                    <select id="filter-day" onchange="applyFilter()">
+                        <option value="ALL">-- Tất cả --</option>
+                    </select>
+                </div>
+                <!-- 2. Lọc Ca -->
+                <div class="filter-group">
+                    <label for="filter-shift"><i class="fa-regular fa-clock"></i> Chọn Ca:</label>
+                    <select id="filter-shift" onchange="applyFilter()">
+                        <option value="ALL">-- Tất cả --</option>
+                    </select>
+                </div>
+                <!-- 3. Lọc Giảng viên -->
+                <div class="filter-group">
+                    <label for="filter-teacher"><i class="fa-solid fa-user-tie"></i> Giảng viên:</label>
+                    <input type="text" id="filter-teacher" list="teacher-list" placeholder="-- Tất cả giảng viên --" oninput="applyFilter()" onchange="applyFilter()">
+                    <datalist id="teacher-list"></datalist>
+                </div>
+            </div>
+
+            <button class="btn-download" onclick="exportToWord()">
+                <i class="fa-solid fa-file-word"></i> Tải Lịch
+            </button>
+        </div>
+
+        <div id="loading"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...</div>
+
+        <!-- BẢNG LỊCH -->
+        <div class="table-responsive">
+            <table id="schedule-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>GIẢNG VIÊN</th>
+                        <th>THỨ</th>
+                        <th>CA</th>
+                        <th>LỚP</th>
+                        <th>PHÒNG</th>
+                        <th>SĨ SỐ</th>
+                        <th>THỜI GIAN</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SHEET_ID = "1HmNk4ZxhsJG4t3J4d2Wm9wRG9tDy_gAk0yAmmDLCUZY";
+        const SHEET_NAME = encodeURIComponent("Lich_giang");
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
+        const CACHE_KEY = "schedule_data_cache";
+
+        let allScheduleData = [];
+        let currentlyDisplayedData = [];
+
+        // Nhấn F2 mở nhanh Sheet
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F2') {
+                e.preventDefault();
+                if (!document.getElementById('api-redirect-btn')) {
+                    const apiBtn = document.createElement('a');
+                    apiBtn.id = 'api-redirect-btn';
+                    apiBtn.href = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=0#gid=0`;
+                    apiBtn.target = '_blank';
+                    apiBtn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Truy cập Sheet';
+                    
+                    apiBtn.style.display = 'inline-block';
+                    apiBtn.style.margin = '25px auto 10px auto';
+                    apiBtn.style.padding = '12px 28px';
+                    apiBtn.style.backgroundColor = '#2563eb';
+                    apiBtn.style.color = '#ffffff';
+                    apiBtn.style.textDecoration = 'none';
+                    apiBtn.style.borderRadius = '6px';
+                    apiBtn.style.fontWeight = 'bold';
+                    apiBtn.style.fontSize = '14px';
+
+                    const btnWrapper = document.createElement('div');
+                    btnWrapper.style.textAlign = 'center';
+                    btnWrapper.appendChild(apiBtn);
+
+                    document.querySelector('.container').appendChild(btnWrapper);
+                    btnWrapper.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+
+        window.onload = function() {
+            // Đọc dữ liệu từ bộ nhớ đệm LocalStorage trước nếu có
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                try {
+                    allScheduleData = JSON.parse(cachedData);
+                    document.getElementById('schedule-table').style.display = 'table';
+                    populateFilterDropdowns();
+                    applyFilter();
+                } catch(e) {
+                    console.error("Lỗi đọc bộ nhớ đệm:", e);
+                }
+            }
+            // Gọi hàm cập nhật dữ liệu mới từ Sheet
+            fetchDataFromSheet();
+        };
+
+        function parseCSVLine(text) {
+            let result = [];
+            let entry = '';
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (inQuotes) {
+                    if (c === '"') {
+                        if (i + 1 < text.length && text[i + 1] === '"') { entry += '"'; i++; }
+                        else { inQuotes = false; }
+                    } else { entry += c; }
+                } else {
+                    if (c === '"') { inQuotes = true; }
+                    else if (c === ',') { result.push(entry); entry = ''; }
+                    else { entry += c; }
+                }
+            }
+            result.push(entry);
+            return result;
+        }
+
+        function cleanText(str) {
+            if (!str) return '';
+            return String(str).replace(/^["'\s]+|["'\s]+$/g, '').trim();
+        }
+
+        function formatDayForDisplay(val) {
+            let clean = cleanText(val);
+            if (clean === "8" || clean.toUpperCase() === "CN") {
+                return "CN";
+            }
+            return clean;
+        }
+
+        function fetchDataFromSheet() {
+            if (allScheduleData.length === 0) {
+                document.getElementById('loading').style.display = 'block';
+            }
+
+            fetch(CSV_URL)
+                .then(response => response.text())
+                .then(text => {
+                    let lines = text.split(/\r?\n/);
+                    let rawData = [];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        let cols = parseCSVLine(lines[i]);
+                        
+                        if (cols.length >= 8) {
+                            let teacher = cleanText(cols[1]);
+                            let rawDay = cleanText(cols[2]);
+                            let shift = cleanText(cols[3]);
+                            let className = cleanText(cols[4]);
+                            let room = cleanText(cols[5]);
+                            let studentCount = cleanText(cols[6]); // Cột G (Sĩ số)
+                            let time = cleanText(cols[7]);         // Cột H (Thời gian)
+
+                            if (teacher || className || room) {
+                                rawData.push({
+                                    stt: cleanText(cols[0]),
+                                    teacher: teacher,
+                                    rawDayNum: parseInt(rawDay) || 99,
+                                    dayDisplay: formatDayForDisplay(rawDay),
+                                    shift: shift,
+                                    className: className,
+                                    room: room,
+                                    studentCount: studentCount,
+                                    time: time
+                                });
+                            }
+                        }
+                    }
+
+                    rawData.sort((a, b) => {
+                        if (a.rawDayNum !== b.rawDayNum) return a.rawDayNum - b.rawDayNum;
+                        
+                        let nA = parseInt(a.shift) || 0;
+                        let nB = parseInt(b.shift) || 0;
+                        if (nA !== nB) return nA - nB;
+
+                        return (a.teacher || "").localeCompare(b.teacher || "", 'vi');
+                    });
+
+                    allScheduleData = rawData;
+                    
+                    // Lưu dữ liệu mới vào bộ nhớ đệm
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(allScheduleData));
+
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('schedule-table').style.display = 'table';
+                    
+                    populateFilterDropdowns();
+                    applyFilter();
+                })
+                .catch(err => {
+                    console.error("Lỗi tải Sheet:", err);
+                    document.getElementById('loading').style.display = 'none';
+                    if (allScheduleData.length === 0) {
+                        document.getElementById('loading').innerHTML = '<span style="color:red">Lỗi tải dữ liệu từ Google Sheet.</span>';
+                        document.getElementById('loading').style.display = 'block';
+                    }
+                });
+        }
+
+        function populateFilterDropdowns() {
+            const daySelect = document.getElementById('filter-day');
+            const shiftSelect = document.getElementById('filter-shift');
+            const teacherDatalist = document.getElementById('teacher-list');
+            
+            let currentDayVal = daySelect.value;
+            let currentShiftVal = shiftSelect.value;
+            
+            daySelect.innerHTML = '<option value="ALL">-- Tất cả --</option>';
+            shiftSelect.innerHTML = '<option value="ALL">-- Tất cả --</option>';
+            teacherDatalist.innerHTML = '';
+            
+            let daysObj = {};
+            let shifts = new Set();
+            let teachers = new Set();
+
+            allScheduleData.forEach(item => {
+                if (item.dayDisplay) {
+                    daysObj[item.dayDisplay] = item.rawDayNum;
+                }
+                if (item.shift) shifts.add(item.shift);
+                if (item.teacher) teachers.add(item.teacher);
+            });
+
+            Object.keys(daysObj)
+                .sort((a, b) => daysObj[a] - daysObj[b])
+                .forEach(d => {
+                    let option = document.createElement('option');
+                    option.value = d;
+                    option.textContent = (d === 'CN') ? "CN" : ("Thứ " + d);
+                    daySelect.appendChild(option);
+                });
+
+            Array.from(shifts).sort((a,b) => (parseInt(a)||0) - (parseInt(b)||0)).forEach(s => {
+                let option = document.createElement('option');
+                option.value = s;
+                option.textContent = (!isNaN(parseInt(s))) ? "Ca " + s : s;
+                shiftSelect.appendChild(option);
+            });
+
+            Array.from(teachers).sort((a,b)=>a.localeCompare(b, 'vi')).forEach(t => {
+                let option = document.createElement('option');
+                option.value = t;
+                teacherDatalist.appendChild(option);
+            });
+
+            daySelect.value = currentDayVal || "ALL";
+            shiftSelect.value = currentShiftVal || "ALL";
+        }
+
+        function normalizeStr(str) {
+            if (!str) return '';
+            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").trim();
+        }
+
+        function applyFilter() {
+            let teacherInput = document.getElementById('filter-teacher').value;
+            let teacherKeyword = normalizeStr(teacherInput);
+            let selectedDay = document.getElementById('filter-day').value;
+            let selectedShift = document.getElementById('filter-shift').value;
+
+            currentlyDisplayedData = allScheduleData.filter(item => {
+                let matchTeacher = (teacherKeyword === '') || normalizeStr(item.teacher).includes(teacherKeyword);
+                let matchDay = (selectedDay === "ALL") || (item.dayDisplay === selectedDay);
+                let matchShift = (selectedShift === "ALL") || (item.shift === selectedShift);
+
+                return matchTeacher && matchDay && matchShift;
+            });
+
+            renderTable(currentlyDisplayedData);
+        }
+
+        function renderTable(dataArray) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (dataArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-message">Không tìm thấy lịch giảng dạy phù hợp</td></tr>';
+                return;
+            }
+
+            dataArray.forEach((item, index) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: bold; text-align: center;">${index + 1}</td>
+                    <td style="font-weight: bold; color: var(--teacher-color);">${item.teacher}</td>
+                    <td style="text-align: center; font-weight: bold; color: ${item.dayDisplay === 'CN' ? '#d97706' : 'inherit'};">${item.dayDisplay}</td>
+                    <td style="text-align: center;">${item.shift}</td>
+                    <td style="text-align: center;">${item.className}</td>
+                    <td style="font-weight: bold; text-align: center;">${item.room}</td>
+                    <td style="text-align: center;">${item.studentCount || ''}</td>
+                    <td style="font-size: 13px; text-align: center; color: #555;">${item.time}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function exportToWord() {
+            if (!currentlyDisplayedData || currentlyDisplayedData.length === 0) {
+                alert("Không có dữ liệu để xuất file Word!");
+                return;
+            }
+
+            let tableRows = currentlyDisplayedData.map((item, index) => `
+                <tr>
+                    <td style="text-align: center; padding: 8px; border: 1px solid #000;">${index + 1}</td>
+                    <td style="padding: 8px; border: 1px solid #000; font-weight: bold;">${item.teacher}</td>
+                    <td style="text-align: center; padding: 8px; border: 1px solid #000; font-weight: bold;">${item.dayDisplay}</td>
+                    <td style="text-align: center; padding: 8px; border: 1px solid #000;">${item.shift}</td>
+                    <td style="text-align: center; padding: 8px; border: 1px solid #000;">${item.className}</td>
+                    <td style="text-align: center; padding: 8px; border: 1px solid #000; font-weight: bold;">${item.room}</td>
+                    <td style="text-align: center; padding: 8px; border: 1px solid #000;">${item.studentCount || ''}</td>
+                    <td style="text-align: center; padding: 8px; border: 1px solid #000;">${item.time}</td>
+                </tr>
+            `).join('');
+
+            let htmlContent = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><title>Lịch Giảng</title></head>
+                <body>
+                    <h2 style="text-align: center;">LỊCH GIẢNG DẠY</h2>
+                    <table border="1" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th>STT</th><th>HỌ VÀ TÊN GIẢNG VIÊN</th><th>THỨ</th><th>CA</th><th>LỚP</th><th>PHÒNG</th><th>SĨ SỐ</th><th>THỜI GIAN</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            let blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'Lich_Giang.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
