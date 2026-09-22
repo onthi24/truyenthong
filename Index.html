@@ -1,1 +1,411 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khoa học cơ bản</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #1a4d2e;
+            --primary-blue: #78281f;
+            --primary-orange: #B5782A;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #fdfdfd; 
+            margin: 0;
+            padding: 20px;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* --- TOP NAVBAR --- */
+        .top-navbar {
+            max-width: 1100px;
+            margin: 0 auto 25px auto;
+            width: 100%;
+            background-color: #f1f4f6;
+            padding: 10px 15px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo-box { display: flex; align-items: center; }
+        .logo-img { height: 45px; object-fit: contain; display: block; }
+        .mobile-menu-btn { display: none; font-size: 24px; cursor: pointer; color: #333; padding: 10px; }
+
+        .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; gap: 5px; }
+        .nav-item-wrap { position: relative; }
+        .nav-item {
+            text-decoration: none; color: #333; padding: 14px 15px; font-weight: 500; font-size: 16px;
+            display: flex; align-items: center; gap: 5px; transition: all 0.2s; border-bottom: 4px solid transparent; cursor: pointer;
+        }
+        .nav-item.active { font-weight: bold; background-color: #fff; border-bottom: 4px solid #000; }
+        .nav-item:hover { background-color: #e2e8f0; }
+        .mobile-close-btn { display: none; }
+
+        /* --- SEARCH BOX --- */
+        .header-main { display: flex; justify-content: flex-end; align-items: center; max-width: 1100px; margin: 0 auto 25px auto; width: 100%; }
+        .search-box input {
+            width: 270px; padding: 10px 16px; border-radius: 25px; border: 1px solid #c7d2d8;
+            background: #f1f4f6; outline: none; font-size: 15px;
+        }
+
+        /* --- LAYOUT DỮ LIỆU --- */
+        .container { display: flex; gap: 20px; max-width: 1100px; margin: 0 auto; width: 100%; }
+        .column { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+        .column-header {
+            padding: 14px 18px; border-radius: 10px; color: white; font-weight: bold; font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .bg-col-0 { background: #1a4d2e; }   
+        .bg-col-1 { background: #78281f; }    
+        .bg-col-2 { background: #B5782A; }  
+
+        .menu-block { display: flex; flex-direction: column; }
+
+        .item-card {
+            background: #fff; padding: 14px 18px; border-radius: 16px; border: 1.5px solid #b5b5b5; 
+            text-decoration: none; display: block; box-shadow: 0 3px 8px rgba(0,0,0,0.08); transition: 0.2s; cursor: pointer;
+        }
+        .item-card:hover { background-color: #f8fafc; border-color: #78281f; }
+        .item-card h2 { margin: 0; font-weight: 700; color: #222; font-size: 18px; }
+
+        .sheet-dropdown {
+            margin-top: -6px; margin-bottom: 5px; padding: 10px 18px 6px 18px; background: #ffffff;
+            border-radius: 0 0 16px 16px; border: 1.5px solid #b5b5b5; border-top: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06); display: none;
+        }
+        .sheet-dropdown a {
+            display: block; text-decoration: none; color: #4a5568; padding: 8px 0; font-size: 15px;
+            border-bottom: 1px solid #f1f4f6; transition: 0.2s;
+        }
+        .sheet-dropdown a:last-child { border-bottom: none; }
+        .sheet-dropdown a:hover { color: #3498db; padding-left: 6px; }
+
+        /* --- ADMIN POPUP MODAL --- */
+        .admin-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px); z-index: 999999; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .admin-modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .admin-modal-content {
+            background: #ffffff; width: 90%; max-width: 600px; padding: 25px; border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; border: 1px solid #e2e8f0;
+        }
+        .admin-modal-close-btn { position: absolute; top: 12px; right: 15px; font-size: 24px; color: #a0aec0; cursor: pointer; }
+        .admin-title { font-weight: bold; color: #1a202c; margin-bottom: 8px; font-size: 18px; }
+        .btn-sync { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .btn-sync:hover { background: #218838; }
+        .btn-copy { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; margin-left: 10px; display: none; }
+        #output-code { width: 100%; height: 160px; margin-top: 15px; display: none; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #cbd5e0; background: #f7fafc; resize: none; }
+
+        @media (max-width: 768px) {
+            body { padding: 0px; } 
+            .top-navbar { justify-content: flex-start; gap: 15px; padding: 10px 15px; background-color: #f4f6f9; border-radius: 0; margin-bottom: 15px; }
+            .mobile-menu-btn { display: block; }
+            .nav-menu {
+                position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background-color: #f4f6f8;
+                box-shadow: 4px 0 12px rgba(0,0,0,0.15); z-index: 99999; flex-direction: column; padding-top: 60px; gap: 0;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .nav-menu.open { left: 0 !important; }
+            .mobile-close-btn { display: block !important; position: absolute; top: 15px; left: 20px; font-size: 24px; cursor: pointer; color: #222; font-weight: bold; }
+            .header-main { flex-direction: column; padding: 0 15px; gap: 12px; align-items: flex-start; }
+            .search-box { width: 100%; padding: 0 15px; }
+            .search-box input { width: 100%; border-radius: 20px; font-size: 14px; padding: 8px 14px; }
+            .container { flex-direction: column; gap: 8px; padding: 0; margin-top: 5px; }
+            .column-header { border-radius: 0; font-size: 15px; padding: 12px; text-align: center; }
+            .item-card { border-radius: 0; border-left: none; border-right: none; padding: 12px; }
+            .item-card h2 { font-size: 14px; text-align: center; font-weight: 600; }
+        }
+    </style>
+    
+    <script>
+        // =========================================================================
+        // 🔑 CHỈ CẦN THAY THẾ ID CỦA GOOGLE SHEET VÀO ĐÂY:
+        // =========================================================================
+        const GOOGLE_SHEET_ID = "1HmNk4ZxhsJG4t3J4d2Wm9wRG9tDy_gAk0yAmmDLCUZY";
+        
+        // Cấu trúc tự động chuyển ID thành đường dẫn nạp dữ liệu chuẩn
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv`;
+        const LOCAL_STORAGE_KEY = "KHCB_APP_DATA_CACHE";
+
+        // 📦 DỮ LIỆU TĨNH
+        let STATIC_DATA_STORE = [];
+
+        function normalizeGoogleDriveLink(rawUrl) {
+            if (!rawUrl || rawUrl.trim() === "" || rawUrl.trim() === "#") return "#";
+            let folderIdMatch = rawUrl.match(/folders\/([a-zA-Z0-9-_]{33,})/);
+            if (folderIdMatch && folderIdMatch[1]) {
+                return "https://drive.google.com/drive/folders/" + folderIdMatch[1] + "?usp=drive_link";
+            }
+            return rawUrl;
+        }
+
+        // =========================================================================
+        // BẮT SỰ KIỆN PHÍM F2 ĐỂ HIỂN THỊ NÚT TRUY CẬP (DƯỚI CÙNG TRANG VÀ TỰ CUỘN)
+        // =========================================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F2') {
+                e.preventDefault();
+                if (!document.getElementById('api-redirect-btn')) {
+                    const apiBtn = document.createElement('a');
+                    apiBtn.id = 'api-redirect-btn';
+                    apiBtn.href = 'https://docs.google.com/spreadsheets/d/1IR57jmQbhe1GtIIcZsP4K7maOHJNMLBVz9OwCnSFEJk/edit?gid=0#gid=0';
+                    apiBtn.target = '_blank';
+                    apiBtn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Truy cập';
+                    
+                    apiBtn.style.display = 'inline-block';
+                    apiBtn.style.padding = '12px 28px';
+                    apiBtn.style.backgroundColor = '#2563eb';
+                    apiBtn.style.color = '#ffffff';
+                    apiBtn.style.textDecoration = 'none';
+                    apiBtn.style.borderRadius = '6px';
+                    apiBtn.style.fontWeight = 'bold';
+                    apiBtn.style.fontSize = '14px';
+                    apiBtn.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                    apiBtn.style.transition = 'all 0.2s ease';
+
+                    const btnWrapper = document.createElement('div');
+                    btnWrapper.style.textAlign = 'center';
+                    btnWrapper.style.width = '100%';
+                    btnWrapper.style.margin = '40px 0 60px 0'; // Tạo khoảng trống thoáng đãng ở cuối trang
+                    btnWrapper.appendChild(apiBtn);
+
+                    // Chèn phần tử xuống sát đáy body
+                    document.body.appendChild(btnWrapper);
+                    
+                    // Tự động cuộn trang mượt mà xuống dưới cùng
+                    btnWrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }
+            }
+        });
+
+        window.onload = function() {
+            // 1. Đọc dữ liệu từ LocalStorage trước
+            const cachedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (cachedData) {
+                try {
+                    STATIC_DATA_STORE = JSON.parse(cachedData);
+                    renderUIFromData(STATIC_DATA_STORE);
+                } catch (e) {
+                    console.error("Lỗi đọc cache LocalStorage:", e);
+                }
+            } else if (STATIC_DATA_STORE && STATIC_DATA_STORE.length > 0) {
+                renderUIFromData(STATIC_DATA_STORE);
+            }
+
+            // 2. Tự động đồng bộ dữ liệu mới nhất từ Google Sheet
+            fetchAndBuildCache(false);
+        };
+
+        function renderUIFromData(dataArr) {
+            if (!dataArr || dataArr.length === 0) return;
+            const container = document.getElementById('main-container');
+            container.innerHTML = ''; 
+
+            // Vẽ Cột Cấp 1
+            const level1Items = dataArr.filter(item => item.level === 1);
+            level1Items.forEach((colItem, index) => {
+                let colDiv = document.createElement('div');
+                colDiv.className = 'column';
+                colDiv.id = 'col-' + colItem.id;
+
+                let headerDiv = document.createElement('div');
+                headerDiv.className = `column-header bg-col-${index % 3}`;
+                headerDiv.textContent = colItem.textDisplay;
+
+                colDiv.appendChild(headerDiv);
+                container.appendChild(colDiv);
+            });
+
+            // Vẽ Thẻ Cấp 2
+            const level2Items = dataArr.filter(item => item.level === 2);
+            level2Items.forEach(item => {
+                let colElement = document.getElementById('col-' + item.columnGroup);
+                if (colElement) {
+                    let blockDiv = document.createElement('div');
+                    blockDiv.className = 'menu-block';
+                    
+                    let cardDiv = document.createElement('div');
+                    cardDiv.className = 'item-card';
+                    cardDiv.setAttribute('onclick', `toggleMenu('drop-${item.id}')`);
+                    cardDiv.innerHTML = `<h2>${item.textDisplay}</h2>`;
+                    
+                    let dropdownDiv = document.createElement('div');
+                    dropdownDiv.className = 'sheet-dropdown';
+                    dropdownDiv.id = 'drop-' + item.id;
+                    
+                    blockDiv.appendChild(cardDiv);
+                    blockDiv.appendChild(dropdownDiv);
+                    colElement.appendChild(blockDiv);
+                }
+            });
+
+            // Gắn Link Cấp 3
+            const level3Items = dataArr.filter(item => item.level === 3);
+            level3Items.forEach(item => {
+                let targetDropdown = document.getElementById(item.parentId);
+                if (targetDropdown) {
+                    let aTag = document.createElement('a');
+                    aTag.id = item.id;
+                    aTag.href = item.url;
+                    aTag.target = "_blank";
+                    aTag.textContent = item.textDisplay;
+                    targetDropdown.appendChild(aTag);
+                }
+            });
+
+            // Xử lý các thẻ trống
+            document.querySelectorAll('.sheet-dropdown').forEach(div => {
+                if(div.innerHTML.trim() === '') {
+                    div.innerHTML = '<span style="color:#95a5a6; font-size:13px; display:block; padding:3px 10px; font-style: italic; text-align:center;">Chưa có dữ liệu con</span>';
+                }
+            });
+        }
+
+        // Tự động phân tách CSV an toàn
+        function parseCSVLine(text) {
+            let result = [];
+            let entry = '';
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (inQuotes) {
+                    if (c === '"') {
+                        if (i + 1 < text.length && text[i + 1] === '"') { entry += '"'; i++; }
+                        else { inQuotes = false; }
+                    } else { entry += c; }
+                } else {
+                    if (c === '"') { inQuotes = true; }
+                    else if (c === ',') { result.push(entry); entry = ''; }
+                    else { entry += c; }
+                }
+            }
+            result.push(entry);
+            return result;
+        }
+
+        function fetchAndBuildCache(isGenerateMode = false) {
+            return fetch(CSV_URL)
+                .then(response => response.text())
+                .then(text => {
+                    let lines = text.split(/\r?\n/);
+                    let dataArr = [];
+                    
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        let columns = parseCSVLine(lines[i]);
+                        if (columns.length >= 2) {
+                            let id = columns[0].trim().toUpperCase().replace(/\s+/g, '');
+                            let textDisplay = columns[1].trim();
+                            let url = columns[2] ? columns[2].trim() : "";
+                            let idParts = id.split('_');
+                            
+                            if (idParts.length === 1) {
+                                dataArr.push({ level: 1, id: id, textDisplay: textDisplay });
+                            } else if (idParts.length === 2) {
+                                dataArr.push({ level: 2, id: id, columnGroup: idParts[0], textDisplay: textDisplay });
+                            } else if (idParts.length >= 3) {
+                                dataArr.push({ level: 3, id: id, parentId: 'drop-' + idParts[0] + '_' + idParts[1], textDisplay: textDisplay, url: normalizeGoogleDriveLink(url) });
+                            }
+                        }
+                    }
+
+                    // Lưu dữ liệu vào LocalStorage
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataArr));
+
+                    if (isGenerateMode) {
+                        generateNewCodeTemplate(dataArr);
+                    } else {
+                        if (JSON.stringify(STATIC_DATA_STORE) !== JSON.stringify(dataArr)) {
+                            STATIC_DATA_STORE = dataArr;
+                            renderUIFromData(dataArr);
+                        }
+                    }
+                })
+                .catch(err => console.error("Lỗi đồng bộ dữ liệu:", err));
+        }
+
+        function handleSearchInput(inputVal) {
+            if (inputVal.trim() === 'khcb123') {
+                document.getElementById('adminModalOverlay').classList.add('show');
+                document.getElementById('search-box-input').value = ''; 
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModalOverlay').classList.remove('show');
+        }
+
+        function generateNewCodeTemplate(dataArr) {
+            let currentFullHtml = document.documentElement.outerHTML;
+            let dataString = JSON.stringify(dataArr);
+            let updatedHtml = "<!DOCTYPE html>\n" + currentFullHtml.replace(/let STATIC_DATA_STORE = \[.*?\];/, `let STATIC_DATA_STORE = ${dataString};`);
+            
+            document.getElementById('output-code').value = updatedHtml;
+            document.getElementById('output-code').style.display = 'block';
+            document.getElementById('btn-copy-code').style.display = 'inline-block';
+        }
+
+        function copyCodeToClipboard() {
+            let textarea = document.getElementById('output-code');
+            textarea.select();
+            document.execCommand('copy');
+            alert("Đã sao chép mã nguồn mới vào bộ nhớ tạm! Dán đè vào file index.html trên GitHub để lưu lại.");
+        }
+
+        function toggleMenu(id) {
+            let menu = document.getElementById(id);
+            if (!menu) return;
+            let isCurrentlyOpen = (menu.style.display === "block");
+            document.querySelectorAll(".sheet-dropdown").forEach(m => m.style.display = "none");
+            menu.style.display = isCurrentlyOpen ? "none" : "block";
+        }
+    </script>
+</head>
+<body>
+
+    <div class="top-navbar">
+        <div class="logo-box">
+            <img src="https://raw.githubusercontent.com/khcbvadl-ai/quanlidulieu/main/logo.%20KHCB%20trong.png" alt="KHCB LOGO" class="logo-img">
+        </div>
+        <div class="nav-menu">
+            <a href="#" class="nav-item active">Trang chủ</a>
+            <a href="video-kho.html" class="nav-item">Video bài giảng</a>
+        </div>
+    </div>
+
+    <div class="header-main">
+        <div class="search-box">
+            <input type="text" id="search-box-input" oninput="handleSearchInput(this.value)" placeholder="Tìm kiếm...">
+        </div>
+    </div>
+
+    <div class="admin-modal-overlay" id="adminModalOverlay">
+        <div class="admin-modal-content">
+            <div class="admin-modal-close-btn" onclick="closeAdminModal()">&times;</div>
+            <div class="admin-title">🛠️ BẢNG ĐIỀU KHIỂN &amp; CẬP NHẬT CODE DỮ LIỆU TĨNH</div>
+            <p style="font-size: 14px; margin-bottom: 12px; color: #664d03;">Nhấn nút bên dưới hệ thống sẽ quét dữ liệu mới nhất từ Google Sheet và đóng gói trực tiếp vào mã HTML mới.</p>
+            <button class="btn-sync" onclick="fetchAndBuildCache(true)">Cập nhật dữ liệu từ Google Sheet</button>
+            <button class="btn-copy" id="btn-copy-code" onclick="copyCodeToClipboard()">Bấm để Copy toàn bộ Code mới</button>
+            <textarea id="output-code" readonly placeholder="Mã nguồn trang web mới sẽ tự động xuất hiện ở đây..."></textarea>
+        </div>
+    </div>
+
+    <div class="container" id="main-container"></div>
+
+</body>
+</html>
 
